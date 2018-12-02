@@ -1,9 +1,7 @@
+const express = require("express");
+const { ApolloServer, gql } = require("apollo-server-express");
 require('dotenv').config()
-var express = require('express');
-var express_graphql = require('express-graphql');
-var { buildSchema } = require('graphql');
-
-// const cors = require('cors');
+require('now-env')
 
 // schemas
 var footballSchema = require('./football/schema');
@@ -19,34 +17,37 @@ var matchQuery = require('./match/query');
 var footballResolvers = require('./football/resolvers');
 var matchResolvers = require('./match/resolvers');
 
-var root = {
-  ...footballResolvers,
-  ...matchResolvers,
-};
-
-var schema = buildSchema(`
+// Construct a schema, using GraphQL schema language
+const typeDefs = gql`
   type Query {
     ${ footbalQuery }
     ${ matchQuery }
   }
   ${ footballSchema }
   ${ matchSchema }
-`);
+`;
 
-const port = process.env.PORT || 4000;
+// Provide resolver functions for your schema fields
+const resolvers = {
+  Query: {
+    ...footballResolvers,
+    ...matchResolvers
+  }
+};
 
-// Create an express server and a GraphQL endpoint
-var app = express();
+const server = new ApolloServer({ typeDefs, resolvers, introspection: true });
 
-// app.use(cors())
+const app = express();
 
-app.use('/graphql', express_graphql({
-  schema: schema,
-  rootValue: root,
-  graphiql: true
-}));
+server.applyMiddleware({ app });
+app.get("/", (req, res) => {
+  res.redirect("/graphql");
+});
 
-app.listen(port, err => {
-  if (err) throw err
-  console.log(`> Ready On Server http://localhost:${port}`)
-})
+const port = 4000;
+
+app.listen({ port }, () =>
+  console.log(
+    `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
+  )
+);
