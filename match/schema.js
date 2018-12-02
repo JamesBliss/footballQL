@@ -22,7 +22,7 @@ module.exports = `
     extraTime: Result
     penalties: Result
   }
-  type Match {
+  type Match @cacheControl(maxAge: 60) {
     id: Int,
     competition: Competition
     season: Season

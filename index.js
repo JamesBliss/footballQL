@@ -35,7 +35,10 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({ typeDefs, resolvers, introspection: true });
+const server = new ApolloServer({
+  typeDefs, resolvers, introspection: true,  cacheControl: true
+
+});
 
 const app = express();
 
