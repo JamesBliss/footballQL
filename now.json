@@ -1,6 +1,7 @@
 {
   "name": "footballQL",
   "version": 2,
+  "alias": "footballQL.com",
   "builds": [
     { "src": "index.js", "use": "@now/node-server" }
   ],
