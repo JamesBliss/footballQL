@@ -1,7 +1,7 @@
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
-require('dotenv').config()
-require('now-env')
+require('dotenv').config();
+require('now-env');
 
 // schemas
 var footballSchema = require('./football/schema');
