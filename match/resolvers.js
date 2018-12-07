@@ -1,5 +1,6 @@
 const fetch = require('node-fetch').default
 const Moment = require('moment');
+const { GraphQLError } = require('graphql/error');
 
 //
 module.exports = {
@@ -16,7 +17,14 @@ module.exports = {
     const match = await fetch(url, { headers: { "X-Auth-Token": process.env.FOOTBALL_KEY } })
       .then(res => res.json());
 
-    console.log(date.format('LTS'), 'query')
+    if (match.errorCode) {
+      throw new GraphQLError(
+        {
+          status: match.errorCode,
+          text: match.message
+        }
+      );
+    }
 
     return match.matches[0];
   }

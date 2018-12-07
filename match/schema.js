@@ -5,8 +5,8 @@ module.exports = `
   }
   type Season {
     id: Int
-    startDate: Int
-    endDate: Int
+    startDate: String
+    endDate: String
     currentMatchday: Int
     winner: String
   }
@@ -22,10 +22,11 @@ module.exports = `
     extraTime: Result
     penalties: Result
   }
-  type Match @cacheControl(maxAge: 60) {
+  type Match @cacheControl(maxAge: 240) {
     id: Int,
     competition: Competition
     season: Season
+    utcDate: String
     status: String
     matchday: Int
     score: Score
