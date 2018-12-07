@@ -36,8 +36,16 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-  typeDefs, resolvers, introspection: true,  cacheControl: true
-
+  typeDefs,
+  resolvers,
+  engine: {
+    apiKey: process.env.ENGINE_KEY
+  },
+  introspection: true,
+  tracing: true,
+  cacheControl: {
+    defaultMaxAge: 20,
+  },
 });
 
 const app = express();
