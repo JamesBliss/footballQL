@@ -2,6 +2,7 @@
   "name": "footballQL",
   "version": 2,
   "alias": "footballQL.com",
+  "regions": ["bru"],
   "builds": [
     { "src": "index.js", "use": "@now/node-server" }
   ],
