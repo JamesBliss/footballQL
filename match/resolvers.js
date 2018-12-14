@@ -1,10 +1,6 @@
-const fetch = require('node-fetch').default
 const Moment = require('moment');
-const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
-
-//
-const KEY = process.env.FOOTBALL_KEY;
+const api = require('../api');
 
 // 1. set resolver cacheControl
 // 2. default to liverpool id but override by custom id
@@ -23,22 +19,14 @@ module.exports = {
 
     const url = `https://api.football-data.org/v2/teams/${id}/matches?dateFrom=${today}&dateTo=${week}`;
 
-    let match = cache.get(url);
+    let matches = cache.get(url);
+    let match;
 
-    if (!match) {
-      const res = await fetch(url, { headers: { "X-Auth-Token": KEY } });
-      const data = await res.json();
-
-      if (data.errorCode) {
-        throw new GraphQLError(
-          {
-            status: data.errorCode,
-            text: data.message
-          }
-        );
-      }
-      match = data.matches[0];
-      cache.set(url, match);
+    if (matches) {
+      match = matches.matches[0];
+    } else {
+      const matches = await api.getMatches(url);
+      match = matches.matches[0];
     }
 
     const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
@@ -51,5 +39,39 @@ module.exports = {
         days: duration.get('days')
       }
     }
+  },
+  upcomingMatches: async (parent, args, ctx, { cacheControl }) => {
+    cacheControl.setCacheHint({ maxAge: 60 });
+
+    const id = args.id || 64;
+
+    const date = Moment(new Date());
+    const today = date.format('YYYY-MM-DD');
+    const week = date.add(1, 'Y').format('YYYY-MM-DD');
+
+    const url = `https://api.football-data.org/v2/teams/${id}/matches?dateFrom=${today}&dateTo=${week}`;
+
+    let matches = cache.get(url);
+
+    if (!matches) {
+      matches = await api.getMatches(url);
+    }
+
+    return matches;
+  },
+  allMatches: async (parent, args, ctx, { cacheControl }) => {
+    cacheControl.setCacheHint({ maxAge: 60 });
+
+    const id = args.id || 64;
+
+    const url = `https://api.football-data.org/v2/teams/${id}/matches`;
+
+    let matches = cache.get(url);
+
+    if (!matches) {
+      matches = await api.getMatches(url);
+    }
+
+    return matches;
   }
 }

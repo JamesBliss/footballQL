@@ -39,4 +39,7 @@ module.exports = `
     awayTeam: Team
     time: Time
   }
+  type Matches @cacheControl(maxAge: 240) {
+    matches: [Match]
+  }
 `;

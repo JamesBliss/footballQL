@@ -4,33 +4,33 @@ require('dotenv').config();
 require('now-env');
 
 // schemas
-var footballSchema = require('./football/schema');
+var teamSchema = require('./team/schema');
 var matchSchema = require('./match/schema');
 
 // queries
-var footbalQuery = require('./football/query');
+var teamQuery = require('./team/query');
 var matchQuery = require('./match/query');
 
 // Mutations
 
 // resolvers
-var footballResolvers = require('./football/resolvers');
+var teamResolvers = require('./team/resolvers');
 var matchResolvers = require('./match/resolvers');
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   type Query {
-    ${ footbalQuery }
+    ${ teamQuery }
     ${ matchQuery }
   }
-  ${ footballSchema }
+  ${ teamSchema }
   ${ matchSchema }
 `;
 
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    ...footballResolvers,
+    ...teamResolvers,
     ...matchResolvers
   }
 };
