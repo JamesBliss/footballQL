@@ -10,6 +10,11 @@ module.exports = `
     currentMatchday: Int
     winner: String
   }
+  type Time {
+    days: Int
+    hours: Int
+    minutes: Int
+  }
   type Result {
     homeTeam: Int
     awayTeam: Int
@@ -32,5 +37,6 @@ module.exports = `
     score: Score
     homeTeam: Team
     awayTeam: Team
+    time: Time
   }
 `;

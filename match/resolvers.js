@@ -41,6 +41,15 @@ module.exports = {
       cache.set(url, match);
     }
 
-    return match;
+    const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
+
+    return {
+      ...match,
+      time: {
+        hours: duration.get('hours'),
+        minutes: duration.get('minutes'),
+        days: duration.get('days')
+      }
+    }
   }
 }
