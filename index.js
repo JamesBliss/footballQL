@@ -20,11 +20,11 @@ var matchResolvers = require('./match/resolvers');
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   type Query {
-    ${ teamQuery }
     ${ matchQuery }
+    ${ teamQuery }
   }
-  ${ teamSchema }
   ${ matchSchema }
+  ${ teamSchema }
 `;
 
 // Provide resolver functions for your schema fields

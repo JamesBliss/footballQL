@@ -21,6 +21,22 @@ module.exports = {
 
     return data;
   },
+  getMatch: async (url) => {
+    const res = await fetch(url, { headers: { "X-Auth-Token": KEY } });
+    const data = await res.json();
+
+    if (data.errorCode) {
+      throw new GraphQLError(
+        {
+          status: data.errorCode,
+          text: data.message
+        }
+      );
+    }
+    cache.set(url, data);
+
+    return data;
+  },
   getTeam: async (url) => {
     const res = await fetch(url, { headers: { "X-Auth-Token": KEY } });
     const data = await res.json();

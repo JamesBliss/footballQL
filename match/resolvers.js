@@ -73,5 +73,20 @@ module.exports = {
     }
 
     return matches;
+  },
+  match: async (parent, args, ctx, { cacheControl }) => {
+    cacheControl.setCacheHint({ maxAge: 60 });
+
+    const id = args.id || 64;
+
+    const url = `https://api.football-data.org/v2/matches/${id}`;
+
+    let match = cache.get(url);
+
+    if (!match) {
+      match = await api.getMatch(url);
+    }
+
+    return match;
   }
 }
