@@ -32,6 +32,12 @@ module.exports = `
   type Lineup {
     players: [Player]
   }
+  type Colour {
+    rgb: [Int]
+    count: Int
+    hex: String
+    textContrast: String
+  }
   type Team {
     id: Int
     area: Area
@@ -52,5 +58,6 @@ module.exports = `
     venue: String
     squad: [Squad]
     lastUpdated: String
+    colours: [Colour]
   }
 `;
