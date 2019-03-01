@@ -52,8 +52,15 @@ module.exports = {
     const data = await res.json();
     const imageRes = await fetch(data.crestUrl);
 
+    // Get the colour palette
     const buffer = await imageRes.buffer();
-    const commonColours = colorThief.getPalette(buffer).map((color) => {
+    const palette = colorThief.getPalette(buffer);
+
+    // Sort by most common
+    const commonColours = palette.sort((a, b) => a.count < b.count)
+
+    // Add the text contrast
+    const commonColorsWithContrast = commonColours.map((color) => {
       let textContrast = '#333'
 
       if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 14)) {
@@ -66,6 +73,11 @@ module.exports = {
         textContrast
       }
     });
+    
+    // Filter out near-white colours
+    const filteredCommonColoursWithContrast = commonColorsWithContrast.filter(colour => {
+      return !(colour.rgb[0] > 220 && colour.rgb[1] > 220 && colour.rgb[2] > 220);
+    });
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -75,7 +87,8 @@ module.exports = {
         }
       );
     }
-    const team = { ...data, colours: commonColours };
+
+    const team = { ...data, colours: filteredCommonColoursWithContrast };
     cache.set(url, team);
 
     return team;
