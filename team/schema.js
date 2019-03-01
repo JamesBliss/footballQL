@@ -1,37 +1,4 @@
 module.exports = `
-  type Squad {
-    id: Int
-    name: String
-    position: String
-    dateOfBirth: String
-    countryOfBirth: String
-    nationality: String
-    role: String
-  }
-  type Area {
-    id: Int
-    name: String
-  }
-  type Coach {
-    id: Int
-    name: String
-    countryOfBirth: String
-    nationality: String
-  }
-  type Captain {
-    id: Int
-    name: String
-    shirtNumber: Int
-  }
-  type Player {
-    id: Int
-    name: String
-    position: String
-    shirtNumber: Int
-  }
-  type Lineup {
-    players: [Player]
-  }
   type Colour {
     rgb: [Int]
     count: Int

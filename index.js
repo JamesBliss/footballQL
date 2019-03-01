@@ -4,34 +4,46 @@ require('dotenv').config();
 require('now-env');
 
 // schemas
+var commonSchema = require('./common/schema');
 var teamSchema = require('./team/schema');
 var matchSchema = require('./match/schema');
+var competitionsSchema = require('./competitions/schema');
 
 // queries
+var commonQuery = require('./common/query');
 var teamQuery = require('./team/query');
 var matchQuery = require('./match/query');
+var competitionsQuery = require('./competitions/query');
 
 // Mutations
 
 // resolvers
+var commonResolvers = require('./common/resolvers');
 var teamResolvers = require('./team/resolvers');
 var matchResolvers = require('./match/resolvers');
+var competitionsResolvers = require('./competitions/resolvers');
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   type Query {
+    ${ commonQuery }
     ${ matchQuery }
     ${ teamQuery }
+    ${ competitionsQuery }
   }
+  ${ commonSchema }
   ${ matchSchema }
   ${ teamSchema }
+  ${ competitionsSchema }
 `;
 
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
+    ...commonResolvers,
+    ...matchResolvers,
     ...teamResolvers,
-    ...matchResolvers
+    ...competitionsResolvers
   }
 };
 

@@ -25,7 +25,7 @@ module.exports = {
     if (matches) {
       match = matches.matches[0];
     } else {
-      const matches = await api.getMatches(url);
+      const matches = await api.get(url);
       match = matches.matches[0];
     }
 
@@ -54,7 +54,7 @@ module.exports = {
     let matches = cache.get(url);
 
     if (!matches) {
-      matches = await api.getMatches(url);
+      matches = await api.get(url);
     }
 
     return matches;
@@ -69,7 +69,7 @@ module.exports = {
     let matches = cache.get(url);
 
     if (!matches) {
-      matches = await api.getMatches(url);
+      matches = await api.get(url);
     }
 
     return matches;
@@ -84,7 +84,7 @@ module.exports = {
     let match = cache.get(url);
 
     if (!match) {
-      match = await api.getMatch(url);
+      match = await api.get(url);
     }
 
     return match;
