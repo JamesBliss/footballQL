@@ -1,4 +1,17 @@
 module.exports = `
+  type Slot {
+    utcDate: String
+    displayDate: String
+    matches: [Match]
+  }
+
+  type Day {
+    utcDate: String
+    displayDate: String
+    matches: [Match]
+    groupedMatches: [Slot]
+  }
+
   type CompetitionsResponse {
     id: Int
     name: String
@@ -29,5 +42,6 @@ module.exports = `
     count: Int
     competition: CompetitionsResponse
     matches: [Match]
+    days: [ Day ]
   }
 `;
