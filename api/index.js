@@ -3,16 +3,41 @@ const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
 var Color = require('color');
 
+const calculateRatio = require('../helpers/color-contrast-checker');
+// var ccc = new ColorContrastChecker();
+
+// const { commonColorsWithContrast } = require('../helpers');
+
 //
 const ColorThief = require('../helpers/color-thief');
 const colorThief = new ColorThief();
 
 //
-const ColorContrastChecker = require('../helpers/color-contrast-checker');
-var ccc = new ColorContrastChecker();
-
-//
 const KEY = process.env.FOOTBALL_KEY;
+
+const commonColorsWithContrast = ({ palette }) => {
+  // Sort by most common
+  const commonColours = palette.sort((a, b) => a.count < b.count)
+
+  // Add the text contrast
+  return commonColours.map((color) => {
+    let textContrast = '#333333'
+
+    const output = calculateRatio({ r: 51, g: 51, b: 51 }, { r: color.rgb[0], g: color.rgb[1], b: color.rgb[2] });
+
+    if (output < 5) {
+      textContrast = '#ffffff';
+    }
+
+    return {
+      ...color,
+      hex: new Color(color.rgb).hex(),
+      textContrast
+    }
+  }).filter(colour => {
+    return !(colour.rgb[0] > 240 && colour.rgb[1] > 240 && colour.rgb[2] > 240);
+  });
+};
 
 module.exports = {
   get: async (url) => {
@@ -36,21 +61,10 @@ module.exports = {
     const data = await res.json();
     const imageRes = await fetch(data.crestUrl);
 
+    // Get the colour palette
     const buffer = await imageRes.buffer();
-    const commonColours = colorThief.getPalette(buffer).map((color) => {
-
-      let textContrast = '#333'
-
-      if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
-        textContrast = '#fff';
-      }
-
-      return {
-        ...color,
-        hex: new Color(color.rgb).hex(),
-        textContrast
-      }
-    });
+    const palette = colorThief.getPalette(buffer);
+    const teamPalette = commonColorsWithContrast({palette});
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -60,7 +74,8 @@ module.exports = {
         }
       );
     }
-    const team = { ...data, colours: commonColours };
+
+    const team = { ...data, colours: teamPalette };
     cache.set(url, team);
 
     return team;
@@ -73,21 +88,12 @@ module.exports = {
       return new Promise(async (res, rej) => {
         const imageRes = await fetch(team.crestUrl);
 
+        // Get the colour palette
         const buffer = await imageRes.buffer();
+        const palette = colorThief.getPalette(buffer);
+        const teamPalette = commonColorsWithContrast({palette});
 
-        const commonColours = colorThief.getPalette(buffer).map((color) => {
-          let textContrast = '#333'
-          if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
-            textContrast = '#fff';
-          }
-          return {
-            ...color,
-            hex: new Color(color.rgb).hex(),
-            textContrast
-          };
-        });
-
-        res({ ...team, colours: commonColours });
+        res({ ...team, colours: teamPalette });
       });
     });
 
