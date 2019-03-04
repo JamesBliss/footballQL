@@ -1,15 +1,12 @@
 const fetch = require('node-fetch').default
 const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
-var Color = require('color');
+
+const { commonColorsWithContrast } = require('../helpers');
 
 //
 const ColorThief = require('../helpers/color-thief');
 const colorThief = new ColorThief();
-
-//
-const ColorContrastChecker = require('../helpers/color-contrast-checker');
-var ccc = new ColorContrastChecker();
 
 //
 const KEY = process.env.FOOTBALL_KEY;
@@ -36,21 +33,10 @@ module.exports = {
     const data = await res.json();
     const imageRes = await fetch(data.crestUrl);
 
+    // Get the colour palette
     const buffer = await imageRes.buffer();
-    const commonColours = colorThief.getPalette(buffer).map((color) => {
-
-      let textContrast = '#333'
-
-      if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
-        textContrast = '#fff';
-      }
-
-      return {
-        ...color,
-        hex: new Color(color.rgb).hex(),
-        textContrast
-      }
-    });
+    const palette = colorThief.getPalette(buffer);
+    const teamPalette = commonColorsWithContrast({palette});
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -60,7 +46,8 @@ module.exports = {
         }
       );
     }
-    const team = { ...data, colours: commonColours };
+
+    const team = { ...data, colours: teamPalette };
     cache.set(url, team);
 
     return team;
@@ -73,21 +60,12 @@ module.exports = {
       return new Promise(async (res, rej) => {
         const imageRes = await fetch(team.crestUrl);
 
+        // Get the colour palette
         const buffer = await imageRes.buffer();
+        const palette = colorThief.getPalette(buffer);
+        const teamPalette = commonColorsWithContrast({palette});
 
-        const commonColours = colorThief.getPalette(buffer).map((color) => {
-          let textContrast = '#333'
-          if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
-            textContrast = '#fff';
-          }
-          return {
-            ...color,
-            hex: new Color(color.rgb).hex(),
-            textContrast
-          };
-        });
-
-        res({ ...team, colours: commonColours });
+        res({ ...team, colours: teamPalette });
       });
     });
 
