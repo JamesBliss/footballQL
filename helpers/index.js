@@ -1,5 +1,9 @@
 const cache = require('../cache');
 const api = require('../api');
+var Color = require('color');
+
+const ColorContrastChecker = require('./color-contrast-checker');
+var ccc = new ColorContrastChecker();
 
 module.exports = {
   getData: async ({ url }) => {
@@ -20,13 +24,10 @@ module.exports = {
     // Sort by most common
     const commonColours = palette.sort((a, b) => a.count < b.count)
 
-    console.log({commonColours})
-
     // Add the text contrast
-    const thing = commonColours.map((color) => {
+    return commonColours.map((color) => {
       let textContrast = '#333'
 
-      debugger;
       if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
         textContrast = '#fff';
       }
@@ -36,14 +37,8 @@ module.exports = {
         hex: new Color(color.rgb).hex(),
         textContrast
       }
-    });
-
-    const another = thing.filter(colour => {
+    }).filter(colour => {
       return !(colour.rgb[0] > 220 && colour.rgb[1] > 220 && colour.rgb[2] > 220);
     });
-
-    console.log({ another })
-
-    return another;
   }
 }

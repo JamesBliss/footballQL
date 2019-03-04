@@ -1,16 +1,12 @@
 const fetch = require('node-fetch').default
 const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
-var Color = require('color');
+
 const { commonColorsWithContrast } = require('../helpers');
 
 //
 const ColorThief = require('../helpers/color-thief');
 const colorThief = new ColorThief();
-
-//
-const ColorContrastChecker = require('../helpers/color-contrast-checker');
-var ccc = new ColorContrastChecker();
 
 //
 const KEY = process.env.FOOTBALL_KEY;
@@ -37,14 +33,10 @@ module.exports = {
     const data = await res.json();
     const imageRes = await fetch(data.crestUrl);
 
-    console.log('hello');
-
     // Get the colour palette
     const buffer = await imageRes.buffer();
     const palette = colorThief.getPalette(buffer);
     const teamPalette = commonColorsWithContrast({palette});
-
-    console.log('hello world', teamPalette)
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -71,8 +63,6 @@ module.exports = {
         // Get the colour palette
         const buffer = await imageRes.buffer();
         const palette = colorThief.getPalette(buffer);
-
-        console.log('hello')
         const teamPalette = commonColorsWithContrast({palette});
 
         res({ ...team, colours: teamPalette });
