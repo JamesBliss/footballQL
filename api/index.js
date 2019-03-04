@@ -1,8 +1,12 @@
 const fetch = require('node-fetch').default
 const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
+var Color = require('color');
 
-const { commonColorsWithContrast } = require('../helpers');
+const calculateRatio = require('../helpers/color-contrast-checker');
+// var ccc = new ColorContrastChecker();
+
+// const { commonColorsWithContrast } = require('../helpers');
 
 //
 const ColorThief = require('../helpers/color-thief');
@@ -10,6 +14,30 @@ const colorThief = new ColorThief();
 
 //
 const KEY = process.env.FOOTBALL_KEY;
+
+const commonColorsWithContrast = ({ palette }) => {
+  // Sort by most common
+  const commonColours = palette.sort((a, b) => a.count < b.count)
+
+  // Add the text contrast
+  return commonColours.map((color) => {
+    let textContrast = '#333333'
+
+    const output = calculateRatio({ r: 51, g: 51, b: 51 }, { r: color.rgb[0], g: color.rgb[1], b: color.rgb[2] });
+
+    if (output < 5) {
+      textContrast = '#ffffff';
+    }
+
+    return {
+      ...color,
+      hex: new Color(color.rgb).hex(),
+      textContrast
+    }
+  }).filter(colour => {
+    return !(colour.rgb[0] > 240 && colour.rgb[1] > 240 && colour.rgb[2] > 240);
+  });
+};
 
 module.exports = {
   get: async (url) => {
