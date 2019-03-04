@@ -2,6 +2,7 @@ const fetch = require('node-fetch').default
 const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
 var Color = require('color');
+const { commonColorsWithContrast } = require('../helpers');
 
 //
 const ColorThief = require('../helpers/color-thief');
@@ -36,32 +37,14 @@ module.exports = {
     const data = await res.json();
     const imageRes = await fetch(data.crestUrl);
 
+    console.log('hello');
+
     // Get the colour palette
     const buffer = await imageRes.buffer();
     const palette = colorThief.getPalette(buffer);
+    const teamPalette = commonColorsWithContrast({palette});
 
-    // Sort by most common
-    const commonColours = palette.sort((a, b) => a.count < b.count)
-
-    // Add the text contrast
-    const commonColorsWithContrast = commonColours.map((color) => {
-      let textContrast = '#333'
-
-      if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
-        textContrast = '#fff';
-      }
-
-      return {
-        ...color,
-        hex: new Color(color.rgb).hex(),
-        textContrast
-      }
-    });
-    
-    // Filter out near-white colours
-    const filteredCommonColoursWithContrast = commonColorsWithContrast.filter(colour => {
-      return !(colour.rgb[0] > 220 && colour.rgb[1] > 220 && colour.rgb[2] > 220);
-    });
+    console.log('hello world', teamPalette)
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -72,7 +55,7 @@ module.exports = {
       );
     }
 
-    const team = { ...data, colours: filteredCommonColoursWithContrast };
+    const team = { ...data, colours: teamPalette };
     cache.set(url, team);
 
     return team;
@@ -85,21 +68,14 @@ module.exports = {
       return new Promise(async (res, rej) => {
         const imageRes = await fetch(team.crestUrl);
 
+        // Get the colour palette
         const buffer = await imageRes.buffer();
+        const palette = colorThief.getPalette(buffer);
 
-        const commonColours = colorThief.getPalette(buffer).map((color) => {
-          let textContrast = '#333'
-          if (!ccc.isLevelAA(textContrast, new Color(color.rgb).hex(), 10)) {
-            textContrast = '#fff';
-          }
-          return {
-            ...color,
-            hex: new Color(color.rgb).hex(),
-            textContrast
-          };
-        });
+        console.log('hello')
+        const teamPalette = commonColorsWithContrast({palette});
 
-        res({ ...team, colours: commonColours });
+        res({ ...team, colours: teamPalette });
       });
     });
 
