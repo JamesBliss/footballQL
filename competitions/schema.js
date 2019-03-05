@@ -2,12 +2,16 @@ module.exports = `
   type Slot {
     utcDate: String
     displayDate: String
+    displayDateFull: String
+    until: String
     matches: [Match]
   }
 
   type Day {
     utcDate: String
     displayDate: String
+    displayDateFull: String
+    until: String
     matches: [Match]
     groupedMatches: [Slot]
   }

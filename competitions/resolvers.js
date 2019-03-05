@@ -74,11 +74,15 @@ module.exports = {
         baseMatches.days.push({
           utcDate: day,
           displayDate: moment(day).format('Do MMM'),
+          displayDateFull: moment(day).format('Do MMM'),
+          until: moment(day).toNow(),
           matches: [{ item }],
           groupedMatches: [
             {
               utcDate: item.utcDate,
               displayDate: moment(item.utcDate).format('hh:mm a'),
+              displayDateFull: moment(item.utcDate).format('dddd Do MMMM - hh:mma'),
+              until: moment(item.utcDate).toNow(),
               matches: [item]
             }
           ]
@@ -91,6 +95,8 @@ module.exports = {
           baseMatches.days[indexDay].groupedMatches.push({
             utcDate: item.utcDate,
             displayDate: moment(item.utcDate).format('hh:mm a'),
+            displayDateFull: moment(item.utcDate).format('dddd Do MMMM - hh:mma'),
+            until: moment(item.utcDate).toNow(),
             matches: [item]
           });
         } else {
