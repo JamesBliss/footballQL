@@ -86,18 +86,28 @@ module.exports = {
 
     const promises = data.teams.map(team => {
       return new Promise(async (res, rej) => {
-        const imageRes = await fetch(team.crestUrl);
+        if (team.crestUrl) {
+          const imageRes = await fetch(team.crestUrl);
+          if (imageRes.status === 200) {
+            // Get the colour palette
+            const buffer = await imageRes.buffer();
+            const palette = colorThief.getPalette(buffer);
+            const teamPalette = commonColorsWithContrast({ palette });
 
-        // Get the colour palette
-        const buffer = await imageRes.buffer();
-        const palette = colorThief.getPalette(buffer);
-        const teamPalette = commonColorsWithContrast({palette});
+            res({ ...team, colours: teamPalette });
+          } else {
+            res(team);
+          }
+        } else {
+          console.log(team.name); // eslint-disable-line
 
-        res({ ...team, colours: teamPalette });
+          res(team);
+        }
       });
     });
 
     const colourAddition = await Promise.all(promises);
+
     const mergedData = {
       ...data,
       teams: {

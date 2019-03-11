@@ -29,9 +29,24 @@ module.exports = {
   competitionStandings: async (parent, args) => {
     // default to Premier League
     const id = args.id || 2021;
+    const filter = args.filter || '';
+    const filterOptions = ['TOTAL', 'HOME', 'AWAY']
     const url = `https://api.football-data.org/v2/competitions/${id}/standings`;
 
-    return await getData({ url });
+    console.log(args)
+
+    const data = await getData({ url });
+
+    const filteredData = data.standings.filter(standing => {
+      if (filterOptions.includes(filter)) {
+        return standing.type === filter;
+      }
+      return true;
+    });
+
+    data.standings = filteredData;
+
+    return data;
   },
   competitionCurrentMatchday: async (parent, args) => {
     // default to Premier League
