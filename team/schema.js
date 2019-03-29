@@ -4,8 +4,10 @@ module.exports = `
     count: Int
     hex: String
     textContrast: String
+    cached: String
   }
   type Team {
+    cached: String
     id: Int
     area: Area
     name: String

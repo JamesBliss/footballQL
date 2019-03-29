@@ -74,7 +74,8 @@ module.exports = `
     playerIn: Player
   }
   type Match @cacheControl(maxAge: 240) {
-    id: Int,
+    id: Int
+    cached: String
     competition: Competition
     season: Season
     utcDate: String
@@ -94,8 +95,9 @@ module.exports = `
     bookings: [Booking]
     substitutions: [Substitution]
   }
-  type Matches @cacheControl(maxAge: 240) {
+  type Matches {
     matches: [Match]
+    cached: String
   }
   type Head2headResult {
     wins: Int

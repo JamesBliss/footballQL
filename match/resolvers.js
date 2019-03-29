@@ -1,6 +1,7 @@
 const Moment = require('moment');
 const cache = require('../cache');
 const api = require('../api');
+const _ = require('lodash');
 
 // 1. set resolver cacheControl
 // 2. default to liverpool id but override by custom id
@@ -33,6 +34,7 @@ module.exports = {
 
     return {
       ...match,
+      cached: _.get(matches, 'cached', null),
       time: {
         hours: duration.get('hours'),
         minutes: duration.get('minutes'),

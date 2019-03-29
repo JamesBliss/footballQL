@@ -4,9 +4,6 @@ const cache = require('../cache');
 var Color = require('color');
 
 const calculateRatio = require('../helpers/color-contrast-checker');
-// var ccc = new ColorContrastChecker();
-
-// const { commonColorsWithContrast } = require('../helpers');
 
 //
 const ColorThief = require('../helpers/color-thief');
@@ -52,7 +49,9 @@ module.exports = {
         }
       );
     }
-    cache.set(url, data);
+
+    console.log({ ...data, ...{ cached: new Date() } })
+    cache.set(url, { ...data, ...{ cached: new Date() } });
 
     return data;
   },
@@ -76,7 +75,7 @@ module.exports = {
     }
 
     const team = { ...data, colours: teamPalette };
-    cache.set(url, team);
+    cache.set(url, { ...team, ...{ cached: new Date() } });
 
     return team;
   },
@@ -99,8 +98,6 @@ module.exports = {
             res(team);
           }
         } else {
-          console.log(team.name); // eslint-disable-line
-
           res(team);
         }
       });
@@ -125,7 +122,7 @@ module.exports = {
       );
     }
 
-    cache.set(url, mergedData);
+    cache.set(url, { ...mergedData, ...{ cached: new Date() } });
 
     return mergedData;
   }

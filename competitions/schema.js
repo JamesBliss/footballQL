@@ -18,6 +18,7 @@ module.exports = `
 
   type CompetitionsResponse {
     id: Int
+    cached: String
     name: String
     code: String
     emblemUrl: String
@@ -28,11 +29,13 @@ module.exports = `
   }
   type CompetitionMatchesResponse {
     count: Int
+    cached: String
     competition: CompetitionsResponse
     matches: [Match]
   }
   type CompetitionTeamsResponse {
     count: Int
+    cached: String
     competition: CompetitionsResponse
     season: Season
     teams: [Team]
@@ -41,9 +44,11 @@ module.exports = `
     competition: CompetitionsResponse
     season: Season
     standings: [StandingsType]
+    cached: String
   }
   type competitionCurrentMatchdayResponse {
     count: Int
+    cached: String
     competition: CompetitionsResponse
     matches: [Match]
     days: [ Day ]

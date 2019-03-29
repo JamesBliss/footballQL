@@ -33,8 +33,6 @@ module.exports = {
     const filterOptions = ['TOTAL', 'HOME', 'AWAY']
     const url = `https://api.football-data.org/v2/competitions/${id}/standings`;
 
-    console.log(args)
-
     const data = await getData({ url });
 
     const filteredData = data.standings.filter(standing => {
