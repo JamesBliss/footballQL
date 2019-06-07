@@ -49,8 +49,6 @@ module.exports = {
         }
       );
     }
-
-    console.log({ ...data, ...{ cached: new Date() } })
     cache.set(url, { ...data, ...{ cached: new Date() } });
 
     return data;

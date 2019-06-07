@@ -2,6 +2,7 @@ const Moment = require('moment');
 const cache = require('../cache');
 const api = require('../api');
 const _ = require('lodash');
+const { GraphQLError } = require('graphql/error');
 
 // 1. set resolver cacheControl
 // 2. default to liverpool id but override by custom id
@@ -30,17 +31,28 @@ module.exports = {
       match = matches.matches[0];
     }
 
-    const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
+    if (match) {
+      const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
 
-    return {
-      ...match,
-      cached: _.get(matches, 'cached', null),
-      time: {
-        hours: duration.get('hours'),
-        minutes: duration.get('minutes'),
-        days: duration.get('days')
+      return {
+        ...match,
+        cached: _.get(matches, 'cached', null),
+        time: {
+          hours: duration.get('hours'),
+          minutes: duration.get('minutes'),
+          days: duration.get('days')
+        }
       }
     }
+    throw new GraphQLError(
+      'No next match found', null, null, null, null, null,
+      {
+        code: 404,
+        status: 404,
+        location: 'nextMatch',
+        message: 'No next match found'
+      }
+    );
   },
   upcomingMatches: async (parent, args, ctx, { cacheControl }) => {
     cacheControl.setCacheHint({ maxAge: 60 });
