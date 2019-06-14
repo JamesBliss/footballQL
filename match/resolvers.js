@@ -17,7 +17,7 @@ module.exports = {
     const id = args.id || 64;
     const date = Moment(new Date());
     const today = date.format('YYYY-MM-DD');
-    const week = date.add(1, 'M').format('YYYY-MM-DD');
+    const week = date.add(10, 'M').format('YYYY-MM-DD');
 
     const url = `https://api.football-data.org/v2/teams/${id}/matches?dateFrom=${today}&dateTo=${week}`;
 
@@ -44,6 +44,7 @@ module.exports = {
         }
       }
     }
+
     throw new GraphQLError(
       'No next match found', null, null, null, null, null,
       {
