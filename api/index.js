@@ -1,18 +1,13 @@
 const fetch = require('node-fetch').default
 const { GraphQLError } = require('graphql/error');
 const cache = require('../cache');
-var Color = require('color');
+const getColors = require('get-image-colors')
 
-const calculateRatio = require('../helpers/color-contrast-checker');
-
-//
-const ColorThief = require('../helpers/color-thief');
-const colorThief = new ColorThief();
-
+const findIndex = require('lodash/findIndex');
 //
 const KEY = process.env.FOOTBALL_KEY;
 
-const commonColorsWithContrast = ({ palette }) => {
+const commonColorsWithContrast = (palette) => {
   // Sort by most common
   const commonColours = palette.sort((a, b) => a.count < b.count)
 
@@ -35,6 +30,34 @@ const commonColorsWithContrast = ({ palette }) => {
     return !(colour.rgb[0] > 240 && colour.rgb[1] > 240 && colour.rgb[2] > 240);
   });
 };
+
+const getColours = async (buffer) => {
+  let pallet;
+  await getColors(buffer, 'image/svg+xml').then(colors => {
+    const colours = [];
+
+    console.log({ colours });
+
+    colors.forEach(color => {
+      const rgb = color.rgb()
+      const hex = color.hex()
+      const foundIndex = findIndex(colours, { hex: hex })
+      if (foundIndex > -1) {
+        colours[foundIndex].count++;
+      } else {
+        colours.push({
+          rgb: rgb,
+          hex: hex,
+          count: 1
+        })
+      }
+    });
+    console.log(colours)
+    pallet = commonColorsWithContrast(colours);
+    return true;
+  });
+  return pallet;
+}
 
 module.exports = {
   get: async (url) => {
@@ -60,8 +83,12 @@ module.exports = {
 
     // Get the colour palette
     const buffer = await imageRes.buffer();
-    const palette = colorThief.getPalette(buffer);
-    const teamPalette = commonColorsWithContrast({palette});
+
+    console.log(data.crestUrl)
+    console.log(imageRes)
+
+    const teamPalette = await getColours(buffer);
+    // console.log(teamPalette)
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -83,13 +110,14 @@ module.exports = {
 
     const promises = data.teams.map(team => {
       return new Promise(async (res, rej) => {
-        if (team.crestUrl) {
+        res(team)
+        if (!team.crestUrl) {
           const imageRes = await fetch(team.crestUrl);
+          console.log(team.crestUrl)
           if (imageRes.status === 200) {
             // Get the colour palette
             const buffer = await imageRes.buffer();
-            const palette = colorThief.getPalette(buffer);
-            const teamPalette = commonColorsWithContrast({ palette });
+            const teamPalette = await getColours(buffer);
 
             res({ ...team, colours: teamPalette });
           } else {
