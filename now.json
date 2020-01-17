@@ -7,7 +7,7 @@
     {
       "src": "index.js",
       "use": "@now/node-server",
-      "config": { "maxLambdaSize": "35mb"}
+      "config": { "maxLambdaSize": "80mb"}
     }
   ],
   "routes": [
