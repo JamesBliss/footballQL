@@ -82,13 +82,10 @@ module.exports = {
     const imageRes = await fetch(data.crestUrl);
 
     // Get the colour palette
-    const buffer = await imageRes.buffer();
-
-    console.log(data.crestUrl)
-    console.log(imageRes)
-
-    const teamPalette = await getColours(buffer);
+    // const buffer = await imageRes.buffer();
+    // const teamPalette = await getColours(buffer);
     // console.log(teamPalette)
+    const teamPalette = null
 
     if (data.errorCode) {
       throw new GraphQLError(
@@ -113,7 +110,6 @@ module.exports = {
         res(team)
         if (!team.crestUrl) {
           const imageRes = await fetch(team.crestUrl);
-          console.log(team.crestUrl)
           if (imageRes.status === 200) {
             // Get the colour palette
             const buffer = await imageRes.buffer();
