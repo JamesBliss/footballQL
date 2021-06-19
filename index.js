@@ -1,5 +1,7 @@
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
+const cors = require('cors')
+
 require('dotenv').config();
 require('now-env');
 
@@ -61,7 +63,7 @@ const server = new ApolloServer({
 });
 
 const app = express();
-
+app.use(cors())
 server.applyMiddleware({ app });
 app.get("/", (req, res) => {
   res.redirect("/graphql");
