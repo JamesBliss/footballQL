@@ -31,6 +31,7 @@ module.exports = {
       match = matches.matches[0];
     }
 
+
     if (match) {
       const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
 

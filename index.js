@@ -53,7 +53,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   engine: {
-    apiKey: process.env.ENGINE_KEY
+    apiKey: process.env.APOLLO_KEY
   },
   introspection: true,
   tracing: true,
