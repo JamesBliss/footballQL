@@ -82,8 +82,8 @@ app.get("/cache", (req, res) => {
   res.end(JSON.stringify(view, null, 2));
 });
 
-app.get("/", (req, res) => {
-  res.redirect("/graphql");
+app.get("*", (req, res) => {
+  res.redirect("https://github.com/JamesBliss/footballQL");
 });
 
 const port = 4000;
