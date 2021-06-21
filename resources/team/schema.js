@@ -1,11 +1,4 @@
 module.exports = `
-  type Colour {
-    rgb: [Int]
-    count: Int
-    hex: String
-    textContrast: String
-    cached: String
-  }
   type Team {
     cached: String
     id: Int
@@ -27,6 +20,5 @@ module.exports = `
     venue: String
     squad: [Squad]
     lastUpdated: String
-    colours: [Colour]
   }
 `;

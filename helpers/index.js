@@ -1,5 +1,5 @@
 const cache = require('../cache');
-const api = require('../api');
+const api = require('../cache/api');
 
 module.exports = {
   getData: async ({ url }) => {

@@ -2,28 +2,30 @@ const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
 const cors = require('cors')
 
+
 require('dotenv').config();
-require('now-env');
+
+//
+const cache = require('./cache');
 
 // schemas
-var commonSchema = require('./common/schema');
-var teamSchema = require('./team/schema');
-var matchSchema = require('./match/schema');
-var competitionsSchema = require('./competitions/schema');
+var commonSchema = require('./resources/common/schema');
+var commonResolvers = require('./resources/common/resolvers');
+var commonQuery = require('./resources/common/query');
 
-// queries
-var commonQuery = require('./common/query');
-var teamQuery = require('./team/query');
-var matchQuery = require('./match/query');
-var competitionsQuery = require('./competitions/query');
 
-// Mutations
+var teamSchema = require('./resources/team/schema');
+var teamQuery = require('./resources/team/query');
+var teamResolvers = require('./resources/team/resolvers');
 
-// resolvers
-var commonResolvers = require('./common/resolvers');
-var teamResolvers = require('./team/resolvers');
-var matchResolvers = require('./match/resolvers');
-var competitionsResolvers = require('./competitions/resolvers');
+var matchSchema = require('./resources/match/schema');
+var matchQuery = require('./resources/match/query');
+var matchResolvers = require('./resources/match/resolvers');
+
+var competitionsSchema = require('./resources/competitions/schema');
+var competitionsQuery = require('./resources/competitions/query');
+var competitionsResolvers = require('./resources/competitions/resolvers');
+
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
@@ -65,6 +67,21 @@ const server = new ApolloServer({
 const app = express();
 app.use(cors())
 server.applyMiddleware({ app });
+
+app.get('/healthz', async (_, res) => {
+  res.send('OK');
+});
+
+app.get("/cache", (req, res) => {
+  const view = {
+    keys: cache.keys(),
+    stats: cache.getStats()
+  }
+
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(view, null, 2));
+});
+
 app.get("/", (req, res) => {
   res.redirect("/graphql");
 });

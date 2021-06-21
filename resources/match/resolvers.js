@@ -1,8 +1,10 @@
 const Moment = require('moment');
-const cache = require('../cache');
-const api = require('../api');
 const _ = require('lodash');
 const { GraphQLError } = require('graphql/error');
+
+//
+const cache = require('../../cache');
+const api = require('../../cache/api');
 
 // 1. set resolver cacheControl
 // 2. default to liverpool id but override by custom id

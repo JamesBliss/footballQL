@@ -1,4 +1,4 @@
-const { getData, getTeamsData } = require('../helpers/index');
+const { getData, getTeamsData } = require('../../helpers/index');
 const _ = require('lodash');
 const moment = require('moment');
 
