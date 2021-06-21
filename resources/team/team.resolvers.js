@@ -2,7 +2,7 @@ const cache = require('../../cache');
 const api = require('../../cache/api');
 
 //
-module.exports = {
+const queries = {
   team: async (parent, args) => {
     const id = args.id || 64;
     const url = `https://api.football-data.org/v2/teams/${id}`
@@ -15,4 +15,9 @@ module.exports = {
 
     return team;
   }
+}
+
+// resolver exportes
+module.exports = {
+  queries
 }

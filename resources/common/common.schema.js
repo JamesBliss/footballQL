@@ -1,4 +1,4 @@
-module.exports = `
+const types = `
   type Squad {
     id: Int
     name: String
@@ -40,6 +40,7 @@ module.exports = `
     days: Int
     hours: Int
     minutes: Int
+    fromNow: String
   }
   type Result {
     homeTeam: Int
@@ -136,3 +137,7 @@ module.exports = `
     table: [TablePosition]
   }
 `;
+
+module.exports = {
+  types,
+};

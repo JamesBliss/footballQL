@@ -9,46 +9,32 @@ require('dotenv').config();
 const cache = require('./cache');
 
 // schemas
-var commonSchema = require('./resources/common/schema');
-var commonResolvers = require('./resources/common/resolvers');
-var commonQuery = require('./resources/common/query');
-
-
-var teamSchema = require('./resources/team/schema');
-var teamQuery = require('./resources/team/query');
-var teamResolvers = require('./resources/team/resolvers');
-
-var matchSchema = require('./resources/match/schema');
-var matchQuery = require('./resources/match/query');
-var matchResolvers = require('./resources/match/resolvers');
-
-var competitionsSchema = require('./resources/competitions/schema');
-var competitionsQuery = require('./resources/competitions/query');
-var competitionsResolvers = require('./resources/competitions/resolvers');
-
+const { common_resolvers, common_schema } = require('./resources/common');
+const { competitions_resolvers, competitions_schema } = require('./resources/competitions');
+const { match_resolvers, match_schema } = require('./resources/match');
+const { team_resolvers, team_schema } = require('./resources/team');
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
   type Query {
-    ${ commonQuery }
-    ${ matchQuery }
-    ${ teamQuery }
-    ${ competitionsQuery }
+    ${ competitions_schema.queries }
+    ${ match_schema.queries }
+    ${ team_schema.queries }
   }
-  ${ commonSchema }
-  ${ matchSchema }
-  ${ teamSchema }
-  ${ competitionsSchema }
+  ${ common_schema.types }
+  ${ competitions_schema.types }
+  ${ match_schema.types }
+  ${ team_schema.types }
 `;
 
 // Provide resolver functions for your schema fields
 const resolvers = {
   Query: {
-    ...commonResolvers,
-    ...matchResolvers,
-    ...teamResolvers,
-    ...competitionsResolvers
-  }
+    ...team_resolvers.queries,
+    ...match_resolvers.queries,
+    ...competitions_resolvers.queries
+  },
+  ...common_resolvers.types
 };
 
 const server = new ApolloServer({

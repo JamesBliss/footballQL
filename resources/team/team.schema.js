@@ -1,4 +1,8 @@
-module.exports = `
+const queries = `
+  team(id: Int!): Team
+`;
+
+const types = `
   type Team {
     cached: String
     id: Int
@@ -22,3 +26,8 @@ module.exports = `
     lastUpdated: String
   }
 `;
+
+module.exports = {
+  queries,
+  types
+}

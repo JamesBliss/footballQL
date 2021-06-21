@@ -3,17 +3,17 @@ const _ = require('lodash');
 const moment = require('moment');
 
 //
-module.exports = {
+const queries = {
   competition: async (parent, args) => {
     // default to Premier League
-    const id = args.id || 2021;
+    const id = args.id || args.code || 'PL';
     const url = `https://api.football-data.org/v2/competitions/${id}`;
 
     return await getData({ url });
   },
   competitionMatches: async (parent, args) => {
     // default to Premier League
-    const id = args.id || 2021;
+    const id = args.id || args.code || 'PL';
     const matchday = args.matchday || '';
     const url = `https://api.football-data.org/v2/competitions/${id}/matches?matchday=${matchday}`;
 
@@ -21,14 +21,14 @@ module.exports = {
   },
   competitionTeams: async (parent, args) => {
     // default to Premier League
-    const id = args.id || 2021;
+    const id = args.id || args.code || 'PL';
     const url = `https://api.football-data.org/v2/competitions/${id}/teams`;
 
     return await getData({ url });
   },
   competitionStandings: async (parent, args) => {
     // default to Premier League
-    const id = args.id || 2021;
+    const id = args.id || args.code || 'PL';
     const filter = args.filter || '';
     const filterOptions = ['TOTAL', 'HOME', 'AWAY']
     const url = `https://api.football-data.org/v2/competitions/${id}/standings`;
@@ -48,7 +48,7 @@ module.exports = {
   },
   competitionCurrentMatchday: async (parent, args) => {
     // default to Premier League
-    const id = args.id || 2021;
+    const id = args.id || args.code || 'PL';
 
     // get teams
     const teamsUrl = `https://api.football-data.org/v2/competitions/${id}/teams`;
@@ -120,4 +120,8 @@ module.exports = {
 
     return baseMatches;
   }
+}
+
+module.exports = {
+  queries
 }

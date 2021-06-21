@@ -1,4 +1,12 @@
-module.exports = `
+const queries = `
+  competition(id: Int, code: String): CompetitionsResponse
+  competitionMatches(id: Int, code: String, matchday: Int): CompetitionMatchesResponse
+  competitionTeams(id: Int, code: String): CompetitionTeamsResponse
+  competitionStandings(id: Int, code: String, filter: String): CompetitionStandingsResponse
+  competitionCurrentMatchday(id: Int, code: String): competitionCurrentMatchdayResponse
+`;
+
+const types = `
   type Slot {
     utcDate: String
     displayDate: String
@@ -54,3 +62,8 @@ module.exports = `
     days: [ Day ]
   }
 `;
+
+module.exports = {
+  queries,
+  types
+}

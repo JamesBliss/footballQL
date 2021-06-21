@@ -6,13 +6,8 @@ const { GraphQLError } = require('graphql/error');
 const cache = require('../../cache');
 const api = require('../../cache/api');
 
-// 1. set resolver cacheControl
-// 2. default to liverpool id but override by custom id
-// 3. get matches from today until end of month
-// 4. build url
-// 5. check if fetch is in cache
-// 6. return the first match in the matches
-module.exports = {
+// match.resolvers.queries
+const queries = {
   nextMatch: async (parent, args, ctx, { cacheControl }) => {
     cacheControl.setCacheHint({ maxAge: 60 });
 
@@ -106,5 +101,23 @@ module.exports = {
     }
 
     return match;
+  },
+  matches: async (parent, args, ctx) => {
+    const url = `https://api.football-data.org/v2/matches`;
+
+    let matches = cache.get(url);
+
+    if (!matches) {
+      matches = await api.get(url);
+    }
+
+    console.log(matches)
+
+    return matches;
   }
+}
+
+// resolver exportes
+module.exports = {
+  queries
 }
