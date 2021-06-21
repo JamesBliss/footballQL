@@ -111,7 +111,19 @@ const queries = {
       matches = await api.get(url);
     }
 
-    console.log(matches)
+    return matches;
+  },
+  matchesToday: async (parent, args, ctx) => {
+    // `2021` = Premier League
+    const id = args.id || 2021;
+
+    const url = `https://api.football-data.org/v2/matches?competitions=${id}`;
+
+    let matches = cache.get(url);
+
+    if (!matches) {
+      matches = await api.get(url);
+    }
 
     return matches;
   }

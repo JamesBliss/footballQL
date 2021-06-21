@@ -4,6 +4,7 @@ const queries = `
   upcomingMatches(id: Int!): Matches
   allMatches(id: Int!): Matches
   matches: Matches
+  matchesToday(id: Int!): Matches
 `;
 
 const types = `
