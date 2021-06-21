@@ -54,9 +54,6 @@ const resolvers = {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  engine: {
-    apiKey: process.env.APOLLO_KEY
-  },
   introspection: true,
   tracing: true,
   cacheControl: {
