@@ -6,8 +6,7 @@
   "builds": [
     {
       "src": "index.js",
-      "use": "@now/node-server",
-      "config": { "maxLambdaSize": "80mb"}
+      "use": "@now/node"
     }
   ],
   "routes": [
