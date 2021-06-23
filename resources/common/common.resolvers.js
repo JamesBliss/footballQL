@@ -3,7 +3,6 @@ const Moment = require('moment');
 const types = {
   Match: {
     time: async (match) => {
-      console.log(match)
       const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
 
       return {

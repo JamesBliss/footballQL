@@ -1,19 +1,17 @@
-const cache = require('../../cache');
-const api = require('../../cache/api');
+const redisApi = require('../../redis/api');
 
 //
 const queries = {
-  team: async (parent, args) => {
-    const id = args.id || 64;
+  teamByID: async (parent, args) => {
+    const id = args.id;
     const url = `https://api.football-data.org/v2/teams/${id}`
 
-    let team = cache.get(url);
+    const payload = await redisApi.get(url, 'year');
 
-    if (!team) {
-      team = await api.getTeam(url);
+    return {
+      errors: payload.error ? [payload.error] : [],
+      data: payload.data
     }
-
-    return team;
   }
 }
 

@@ -1,36 +1,8 @@
 const types = `
-  type Squad {
-    id: Int
-    name: String
-    position: String
-    dateOfBirth: String
-    countryOfBirth: String
-    nationality: String
-    role: String
-  }
-  type Area {
-    id: Int
-    name: String
-  }
-  type Coach {
-    id: Int
-    name: String
-    countryOfBirth: String
-    nationality: String
-  }
-  type Captain {
-    id: Int
-    name: String
-    shirtNumber: Int
-  }
-  type Player {
-    id: Int
-    name: String
-    position: String
-    shirtNumber: Int
-  }
-  type Lineup {
-    players: [Player]
+  type Error {
+    call: String
+    message: String
+    errorCode: Int
   }
   type Competition {
     id: Int
@@ -54,36 +26,15 @@ const types = `
     extraTime: Result
     penalties: Result
   }
-  type Goal {
-    minute: Int
-    extraTime: Int
-    type: String
-    team: Team
-    scorer: Player
-    assist: Player
-  }
-  type Booking {
-    minute: Int
-    team: Team
-    player: Player
-    card: String
-  }
-  type Substitution {
-    minute: Int
-    team: Team
-    playerOut: Player
-    playerIn: Player
-  }
-  type Match @cacheControl(maxAge: 240) {
+  type Match {
     id: Int
     cached: String
+    cachedUntil: String
     competition: Competition
     season: Season
     utcDate: String
     status: String
     minute: Int
-    attendance: Int
-    venue: String
     matchday: Int
     stage: String
     group: String
@@ -92,13 +43,11 @@ const types = `
     homeTeam: Team
     awayTeam: Team
     time: Time
-    goals: [Goal]
-    bookings: [Booking]
-    substitutions: [Substitution]
   }
   type Matches {
     matches: [Match]
     cached: String
+    cachedUntil: String
   }
   type Head2headResult {
     wins: Int

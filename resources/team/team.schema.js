@@ -1,17 +1,13 @@
 const queries = `
-  team(id: Int!): Team
+  teamByID(id: Int!): TeamWithErrors
 `;
 
 const types = `
   type Team {
     cached: String
+    cachedUntil: String
     id: Int
-    area: Area
     name: String
-    coach: Coach
-    captain: Captain
-    lineup: Lineup
-    bench: Lineup
     shortName: String
     tla: String
     crestUrl: String
@@ -22,8 +18,12 @@ const types = `
     founded: Int
     clubColors: String
     venue: String
-    squad: [Squad]
     lastUpdated: String
+  }
+
+  type TeamWithErrors {
+    errors: [Error]
+    data: Team
   }
 `;
 

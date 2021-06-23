@@ -1,9 +1,6 @@
 const queries = `
-  competition(id: Int, code: String): CompetitionsResponse
-  competitionMatches(id: Int, code: String, matchday: Int): CompetitionMatchesResponse
-  competitionTeams(id: Int, code: String): CompetitionTeamsResponse
-  competitionStandings(id: Int, code: String, filter: String): CompetitionStandingsResponse
-  competitionCurrentMatchday(id: Int, code: String): competitionCurrentMatchdayResponse
+  competitionStandings(id: Int, code: String): CompetitionStandingsResponse
+  competitionCurrentMatchday(id: Int, code: String): CompetitionCurrentMatchdayResponse
 `;
 
 const types = `
@@ -27,39 +24,39 @@ const types = `
   type CompetitionsResponse {
     id: Int
     cached: String
+    cachedUntil: String
     name: String
     code: String
     emblemUrl: String
     lastUpdated: String
-    area: Area
     currentSeason: Season
     seasons: [Season]
   }
-  type CompetitionMatchesResponse {
-    count: Int
-    cached: String
-    competition: CompetitionsResponse
-    matches: [Match]
-  }
-  type CompetitionTeamsResponse {
-    count: Int
-    cached: String
-    competition: CompetitionsResponse
-    season: Season
-    teams: [Team]
-  }
-  type CompetitionStandingsResponse {
+  type CompetitionStandings {
     competition: CompetitionsResponse
     season: Season
     standings: [StandingsType]
     cached: String
+    cachedUntil: String
   }
-  type competitionCurrentMatchdayResponse {
+
+  type CompetitionStandingsResponse {
+    errors: [Error]
+    data: CompetitionStandings
+  }
+
+  type CompetitionCurrentMatchday {
     count: Int
     cached: String
+    cachedUntil: String
     competition: CompetitionsResponse
     matches: [Match]
-    days: [ Day ]
+    days: [Day]
+  }
+
+  type CompetitionCurrentMatchdayResponse {
+    errors: [Error]
+    data: CompetitionCurrentMatchday
   }
 `;
 

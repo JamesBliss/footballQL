@@ -1,17 +1,16 @@
 const queries = `
-  match(id: Int!): MatchResponse
-  nextMatch(id: Int!): Match
-  upcomingMatches(id: Int!): Matches
-  allMatches(id: Int!): Matches
-  matches: Matches
-  matchesToday(id: Int!): Matches
+  nextMatchByID(id: Int!): MatchWithError
+  nextMatchesByCompetition(id: Int, code: String): MatchesWithError
 `;
 
 const types = `
-  type MatchResponse {
-    head2head: Head2head
-    match: Match
-    cached: String
+  type MatchesWithError {
+    data: Matches
+    errors: [Error]
+  }
+  type MatchWithError {
+    data: Match
+    errors: [Error]
   }
 `;
 

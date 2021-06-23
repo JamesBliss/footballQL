@@ -6,7 +6,7 @@ const cors = require('cors')
 require('dotenv').config();
 
 //
-const cache = require('./cache');
+const cache = require('./node-cache');
 
 // schemas
 const { common_resolvers, common_schema } = require('./resources/common');

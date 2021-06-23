@@ -1,131 +1,73 @@
 const Moment = require('moment');
 const _ = require('lodash');
-const { GraphQLError } = require('graphql/error');
 
 //
-const cache = require('../../cache');
-const api = require('../../cache/api');
+const redisApi = require('../../redis/api');
 
 // match.resolvers.queries
 const queries = {
-  nextMatch: async (parent, args, ctx, { cacheControl }) => {
-    cacheControl.setCacheHint({ maxAge: 60 });
-
+  nextMatchByID: async (parent, args, ctx) => {
     const id = args.id || 64;
     const date = Moment(new Date());
     const today = date.format('YYYY-MM-DD');
     const week = date.add(10, 'M').format('YYYY-MM-DD');
 
+    // get matches for the team
     const url = `https://api.football-data.org/v2/teams/${id}/matches?dateFrom=${today}&dateTo=${week}`;
+    const { data, error } = await redisApi.get(url, 'hour');
 
-    let matches = cache.get(url);
-    let match;
-
-    if (matches) {
-      match = matches.matches[0];
-    } else {
-      const matches = await api.get(url);
-      match = matches.matches[0];
-    }
-
+    // get the next match
+    const match = data?.matches?.[0] || null;
 
     if (match) {
+      // get teams for the competition
+      const teamsUrl = `https://api.football-data.org/v2/competitions/${match.competition.id}/teams`;
+      const { data: teams, error: teamsError } = await redisApi.get(teamsUrl, 'year');
+
+      // if the comp worked then map teams
+      if (teams) {
+        const homeTeam = _.find(teams.teams, { id: match.homeTeam.id });
+        const awayTeam = _.find(teams.teams, { id: match.awayTeam.id });
+
+        match.homeTeam = { ...match.homeTeam, ...homeTeam };
+        match.awayTeam = { ...match.awayTeam, ...awayTeam };
+      }
+
       const duration = Moment.duration(Moment.utc(match.utcDate).diff(Moment()));
 
+      console.log({ teamsError})
+
       return {
-        ...match,
-        cached: _.get(matches, 'cached', null),
-        time: {
-          hours: duration.get('hours'),
-          minutes: duration.get('minutes'),
-          days: duration.get('days')
-        }
+        data: {
+          ...match,
+          cached: data.cached,
+          cachedUntil: data.cachedUntil,
+          time: {
+            hours: duration.get('hours'),
+            minutes: duration.get('minutes'),
+            days: duration.get('days')
+          }
+        },
+        errors: teamsError ? [teamsError] : []
       }
     }
-
-    throw new GraphQLError(
-      'No next match found', null, null, null, null, null,
-      {
-        code: 404,
-        status: 404,
-        location: 'nextMatch',
-        message: 'No next match found'
-      }
-    );
-  },
-  upcomingMatches: async (parent, args, ctx, { cacheControl }) => {
-    cacheControl.setCacheHint({ maxAge: 60 });
-
-    const id = args.id || 64;
-
-    const date = Moment(new Date());
-    const today = date.format('YYYY-MM-DD');
-    const week = date.add(1, 'Y').format('YYYY-MM-DD');
-
-    const url = `https://api.football-data.org/v2/teams/${id}/matches?dateFrom=${today}&dateTo=${week}`;
-
-    let matches = cache.get(url);
-
-    if (!matches) {
-      matches = await api.get(url);
+    return {
+      data: null,
+      errors: error ? [error] : []
     }
-
-    return matches;
   },
-  allMatches: async (parent, args, ctx, { cacheControl }) => {
-    cacheControl.setCacheHint({ maxAge: 60 });
-
-    const id = args.id || 64;
-
-    const url = `https://api.football-data.org/v2/teams/${id}/matches`;
-
-    let matches = cache.get(url);
-
-    if (!matches) {
-      matches = await api.get(url);
-    }
-
-    return matches;
-  },
-  match: async (parent, args, ctx, { cacheControl }) => {
-    cacheControl.setCacheHint({ maxAge: 60 });
-
-    const id = args.id || 64;
-
-    const url = `https://api.football-data.org/v2/matches/${id}`;
-
-    let match = cache.get(url);
-
-    if (!match) {
-      match = await api.get(url);
-    }
-
-    return match;
-  },
-  matches: async (parent, args, ctx) => {
-    const url = `https://api.football-data.org/v2/matches`;
-
-    let matches = cache.get(url);
-
-    if (!matches) {
-      matches = await api.get(url);
-    }
-
-    return matches;
-  },
-  matchesToday: async (parent, args, ctx) => {
-    // `2021` = Premier League
-    const id = args.id || 2021;
+  nextMatchesByCompetition: async (parent, args, ctx) => {
+    // `2021` || 'PL' = Premier League
+    const id = args.id || args.code || 2021;
 
     const url = `https://api.football-data.org/v2/matches?competitions=${id}`;
 
-    let matches = cache.get(url);
+    const {data, error} = await redisApi.get(url, 'hour');
 
-    if (!matches) {
-      matches = await api.get(url);
-    }
-
-    return matches;
+    return {
+      data,
+      errors: error ? [error] : []
+    };
   }
 }
 
